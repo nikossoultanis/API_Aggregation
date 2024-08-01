@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.9.34714.143
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "API_Aggregation_Service.Tests", "API_Aggregation_Service.Tests.csproj", "{A13372B1-C553-4045-A6B0-3E70F55C119B}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A13372B1-C553-4045-A6B0-3E70F55C119B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A13372B1-C553-4045-A6B0-3E70F55C119B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A13372B1-C553-4045-A6B0-3E70F55C119B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A13372B1-C553-4045-A6B0-3E70F55C119B}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {E69388E3-5C2D-455C-9D4F-735D6C22AF05}
+	EndGlobalSection
+EndGlobal
