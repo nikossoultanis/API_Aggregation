@@ -13,7 +13,7 @@ namespace API_Aggregation.Tests
         private readonly Mock<ITwitterService> _twitterServiceMock;
         private readonly Mock<INewsService> _newsServiceMock;
         private readonly Mock<ISpotifyService> _spotifyServiceMock;
-        private readonly Mock<IGitHubService> _gitHubServiceMock;
+        private readonly Mock<ICountryService> _countryServiceMock;
         private readonly AggregationService _aggregationService;
 
         public AggregationServiceTests()
@@ -22,14 +22,14 @@ namespace API_Aggregation.Tests
             _twitterServiceMock = new Mock<ITwitterService>();
             _newsServiceMock = new Mock<INewsService>();
             _spotifyServiceMock = new Mock<ISpotifyService>();
-            _gitHubServiceMock = new Mock<IGitHubService>();
+            _countryServiceMock = new Mock<ICountryService>();
 
             _aggregationService = new AggregationService(
                 _weatherServiceMock.Object,
                 _twitterServiceMock.Object,
                 _newsServiceMock.Object,
                 _spotifyServiceMock.Object,
-                _gitHubServiceMock.Object
+                _countryServiceMock.Object
             );
         }
 
@@ -41,7 +41,7 @@ namespace API_Aggregation.Tests
             _twitterServiceMock.Setup(s => s.GetTweetsAsync(It.IsAny<string>())).ReturnsAsync("[{\"text\":\"tweet1\"}, {\"text\":\"tweet2\"}]");
             _newsServiceMock.Setup(s => s.GetNewsAsync(It.IsAny<string>())).ReturnsAsync("[{\"title\":\"news1\"}, {\"title\":\"news2\"}]");
             _spotifyServiceMock.Setup(s => s.GetMusicDataAsync(It.IsAny<string>())).ReturnsAsync("[{\"track\":\"song1\"}, {\"track\":\"song2\"}]");
-            _gitHubServiceMock.Setup(s => s.GetRepositoryDataAsync(It.IsAny<string>())).ReturnsAsync("[{\"repo\":\"repo1\"}, {\"repo\":\"repo2\"}]");
+            _countryServiceMock.Setup(s => s.GetCountryDataAsync(It.IsAny<string>())).ReturnsAsync("[{\"repo\":\"repo1\"}, {\"repo\":\"repo2\"}]");
 
             // Act
             var result = await _aggregationService.GetAggregatedDataAsync("location", "query");
@@ -52,7 +52,7 @@ namespace API_Aggregation.Tests
             Assert.Equal("[{\"text\":\"tweet1\"}, {\"text\":\"tweet2\"}]", result.TwitterData);
             Assert.Equal("[{\"title\":\"news1\"}, {\"title\":\"news2\"}]", result.NewsData);
             Assert.Equal("[{\"track\":\"song1\"}, {\"track\":\"song2\"}]", result.MusicData);
-            Assert.Equal("[{\"repo\":\"repo1\"}, {\"repo\":\"repo2\"}]", result.GitHubData);
+            Assert.Equal("[{\"repo\":\"country1\"}, {\"repo\":\"country2\"}]", result.CountryData);
         }
     }
 }

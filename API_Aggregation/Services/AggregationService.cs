@@ -8,15 +8,15 @@ namespace API_Aggregation.Services
         private readonly ITwitterService _twitterService;
         private readonly INewsService _newsService;
         private readonly ISpotifyService _spotifyService;
-        private readonly IGitHubService _gitHubService;
+        private readonly ICountryService _countryService;
 
-        public AggregationService(IOpenWeatherMapService weatherService, ITwitterService twitterService, INewsService newsService, ISpotifyService spotifyService, IGitHubService gitHubService)
+        public AggregationService(IOpenWeatherMapService weatherService, ITwitterService twitterService, INewsService newsService, ISpotifyService spotifyService, ICountryService countryService)
         {
             _weatherService = weatherService;
             _twitterService = twitterService;
             _newsService = newsService;
             _spotifyService = spotifyService;
-            _gitHubService = gitHubService;
+            _countryService = countryService;
         }
 
         public async Task<AggregatedData> GetAggregatedDataAsync(string location, string query)
@@ -25,9 +25,9 @@ namespace API_Aggregation.Services
             var twitterTask = _twitterService.GetTweetsAsync(query);
             var newsTask = _newsService.GetNewsAsync(location);
             var musicTask = _spotifyService.GetMusicDataAsync(location);
-            var gitHubTask = _gitHubService.GetRepositoryDataAsync(query);
+            var countryTask = _countryService.GetCountryDataAsync(query);
 
-            await Task.WhenAll(weatherTask, twitterTask, newsTask, musicTask, gitHubTask);
+            await Task.WhenAll(weatherTask, twitterTask, newsTask, musicTask, countryTask);
 
             return new AggregatedData
             {
@@ -35,7 +35,7 @@ namespace API_Aggregation.Services
                 TwitterData = await twitterTask,
                 NewsData = await newsTask,
                 MusicData = await musicTask,
-                GitHubData = await gitHubTask
+                CountryData = await countryTask
             };
         }
     }

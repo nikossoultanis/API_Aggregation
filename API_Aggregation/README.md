@@ -13,7 +13,7 @@ Retrieve aggregated data from all integrated APIs.
 #### Query Parameters
 
 - `location` (string): The location for weather data.
-- `query` (string): The search query for Twitter, News, Spotify, and GitHub data.
+- `query` (string): The search query for Twitter, News, Spotify, and GitHub/Country data.
 
 #### Response
 
@@ -23,5 +23,5 @@ Retrieve aggregated data from all integrated APIs.
   "twitterData": "string",
   "newsData": "string",
   "musicData": "string",
-  "gitHubData": "string"
+  "countryData": "string"
 }

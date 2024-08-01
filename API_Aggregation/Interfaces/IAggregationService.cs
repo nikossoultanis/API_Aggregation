@@ -11,6 +11,6 @@
         public string TwitterData { get; set; }
         public string NewsData { get; set; }
         public string MusicData { get; set; }
-        public string GitHubData { get; set; }
+        public string CountryData { get; set; }
     }
 }

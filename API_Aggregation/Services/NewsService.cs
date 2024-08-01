@@ -2,7 +2,7 @@
 using API_Aggregation.Interfaces;
 using Microsoft.Extensions.Options;
 
-namespace ApiAggregationService.Services
+namespace API_Aggregation.Services
 {
     public class NewsService : INewsService
     {

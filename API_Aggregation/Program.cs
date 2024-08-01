@@ -1,8 +1,6 @@
 using API_Aggregation.Configurations;
 using API_Aggregation.Interfaces;
 using API_Aggregation.Services;
-using ApiAggregationService.Services;
-using Microsoft.Extensions.Options;
 using Microsoft.OpenApi.Models;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,14 +10,15 @@ builder.Services.Configure<OpenWeatherMapConfig>(builder.Configuration.GetSectio
 builder.Services.Configure<TwitterConfig>(builder.Configuration.GetSection("Twitter"));
 builder.Services.Configure<NewsConfig>(builder.Configuration.GetSection("News"));
 builder.Services.Configure<SpotifyConfig>(builder.Configuration.GetSection("Spotify"));
-builder.Services.Configure<GitHubConfig>(builder.Configuration.GetSection("GitHub"));
+//builder.Services.Configure<GitHubConfig>(builder.Configuration.GetSection("GitHub"));
 
 builder.Services.AddHttpClient();
+builder.Services.AddSingleton<RequestStatisticsService>();
 builder.Services.AddScoped<IOpenWeatherMapService, OpenWeatherMapService>();
 builder.Services.AddScoped<ITwitterService, TwitterService>();
 builder.Services.AddScoped<INewsService, NewsService>();
 builder.Services.AddScoped<ISpotifyService, SpotifyService>();
-builder.Services.AddScoped<IGitHubService, GitHubService>();
+builder.Services.AddScoped<ICountryService, CountryService>();
 builder.Services.AddScoped<IAggregationService, AggregationService>();
 builder.Services.AddMemoryCache();
 builder.Services.AddControllers();
