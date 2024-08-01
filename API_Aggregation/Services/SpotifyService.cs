@@ -47,13 +47,22 @@ namespace API_Aggregation.Services
 
                     client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
                     HttpResponseMessage new_response = new HttpResponseMessage();
+                    string ApiResponse = "";
+
+                    ResilientHttpClient resilientHttpClient = new ResilientHttpClient(client);
+
                     if (dateTimeFiltering)
+                        ApiResponse = await resilientHttpClient.GetDataWithFallbackAsync($"https://api.spotify.com/v1/search?q={fromDate.Substring(0, 5)}&type=track&country={location}&market={Uri.EscapeDataString("GR")}&&limit=10");
+                    else
+                        ApiResponse = await resilientHttpClient.GetDataWithFallbackAsync($"https://api.spotify.com/v1/search?q={Uri.EscapeDataString("track")}&type=track&country={location}&market={Uri.EscapeDataString("GR")}&limit=10");
+
+                    return ApiResponse;
+ /*                   if (dateTimeFiltering)
                         // substring gets only Year from the datetime.
                         new_response = await client.GetAsync($"https://api.spotify.com/v1/search?q={fromDate.Substring(0, 5)}&type=track&country={location}&market={Uri.EscapeDataString("GR")}&&limit=10");
                     else
                         new_response = await client.GetAsync($"https://api.spotify.com/v1/search?q={Uri.EscapeDataString("track")}&type=track&country={location}&market={Uri.EscapeDataString("GR")}&limit=10");
-
-                    if (response.IsSuccessStatusCode)
+                   if (response.IsSuccessStatusCode)
                     {
                         string new_responseBody = await new_response.Content.ReadAsStringAsync();
                         return new_responseBody;
@@ -63,6 +72,7 @@ namespace API_Aggregation.Services
                         Console.WriteLine("Error getting top tracks: " + response.ReasonPhrase);
                         return "Error getting tracks: " + response.ReasonPhrase;
                     }
+ */
                 }
                 else
                 {

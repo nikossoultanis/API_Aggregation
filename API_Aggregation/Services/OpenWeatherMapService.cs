@@ -5,6 +5,7 @@ using API_Aggregation.Configurations;
 using API_Aggregation.Interfaces;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Options;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 namespace API_Aggregation.Services
 {
     // Inheritance of the main Interface
@@ -29,14 +30,16 @@ namespace API_Aggregation.Services
         {
             try
             {
+                string response = "";
                 var stopwatch = Stopwatch.StartNew();
-                var response = await _httpClient.GetAsync($"https://api.openweathermap.org/data/2.5/weather?q={location}&appid={_apiKey}");
-                response.EnsureSuccessStatusCode();
-                var data = await response.Content.ReadAsStringAsync();
 
+                ResilientHttpClient resilientHttpClient = new ResilientHttpClient();
+                response = await resilientHttpClient.GetDataWithFallbackAsync($"https://api.openweathermap.org/data/2.5/weather?q={location}&appid={_apiKey}");        
+                
                 stopwatch.Stop();
+
                 _statisticsService.RecordRequest("OpenWeatherMap", stopwatch.ElapsedMilliseconds);
-                return data;
+                return response;
             }
             catch (HttpRequestException)
             {

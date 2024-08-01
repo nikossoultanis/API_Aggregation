@@ -2,6 +2,7 @@
 using API_Aggregation.Interfaces;
 using Microsoft.Extensions.Options;
 using System.Diagnostics;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace API_Aggregation.Services
 {
@@ -24,18 +25,16 @@ namespace API_Aggregation.Services
                 var stopwatch = Stopwatch.StartNew();
 
                 // HTTP request to the API endpoint
-                var response = await _httpClient.GetAsync($"https://restcountries.com/v3.1/name/{query}");
-                response.EnsureSuccessStatusCode();
-                // if response if OK we continue by reading the response
-                // otherwise we go the the catch and return a message
-                var data = await response.Content.ReadAsStringAsync();
+                ResilientHttpClient resilientHttpClient = new ResilientHttpClient();
 
+                string response = await resilientHttpClient.GetDataWithFallbackAsync($"https://restcountries.com/v3.1/name/{query}");
                 stopwatch.Stop();
+
                 // statistic service is responsible for saving the info data about an API call.
                 // in this example the info is the time required for the api call.
                 // in swagger we can see all the saved data for every API call we did.
                 _statisticsService.RecordRequest("CountryAPI", stopwatch.ElapsedMilliseconds);
-                return data;
+                return response;
             }
             catch (HttpRequestException)
             {
