@@ -2,6 +2,6 @@
 {
     public interface ISpotifyService
     {
-        Task<string> GetMusicDataAsync(string location);
+        Task<string> GetMusicDataAsync(string location, bool dateTimeFiltering, string fromDate);
     }
 }

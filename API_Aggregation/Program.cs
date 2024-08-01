@@ -12,6 +12,9 @@ builder.Services.Configure<NewsConfig>(builder.Configuration.GetSection("News"))
 builder.Services.Configure<SpotifyConfig>(builder.Configuration.GetSection("Spotify"));
 //builder.Services.Configure<GitHubConfig>(builder.Configuration.GetSection("GitHub"));
 
+//We registers the Services as the implementation of the Interface of the Service with a scoped lifetime.
+// Done for every Service. example OpenWeather, News etc.
+// provides loose coupling, and increased testability
 builder.Services.AddHttpClient();
 builder.Services.AddSingleton<RequestStatisticsService>();
 builder.Services.AddScoped<IOpenWeatherMapService, OpenWeatherMapService>();

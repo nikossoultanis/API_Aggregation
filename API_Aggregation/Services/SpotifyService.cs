@@ -24,49 +24,54 @@ namespace API_Aggregation.Services
             _clientIdSecret = config.Value.ClientIDSecret;
         }
 
-        public async Task<string> GetMusicDataAsync(string location)
-        { 
-            string tokenUrl = "https://accounts.spotify.com/api/token";
-            using HttpClient client = new HttpClient();
-            var request = new HttpRequestMessage(HttpMethod.Post, tokenUrl);
-            request.Headers.Authorization = new AuthenticationHeaderValue("Basic",
-                Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes($"{_clientId}:{_clientIdSecret}")));
-            request.Content = new FormUrlEncodedContent(new[]
+        public async Task<string> GetMusicDataAsync(string location, bool dateTimeFiltering, string fromDate)
+        {
+            try
             {
+                string tokenUrl = "https://accounts.spotify.com/api/token";
+                using HttpClient client = new HttpClient();
+                var request = new HttpRequestMessage(HttpMethod.Post, tokenUrl);
+                request.Headers.Authorization = new AuthenticationHeaderValue("Basic",
+                    Convert.ToBase64String(System.Text.Encoding.UTF8.GetBytes($"{_clientId}:{_clientIdSecret}")));
+                request.Content = new FormUrlEncodedContent(new[]
+                {
             new KeyValuePair<string, string>("grant_type", "client_credentials")
             });
 
-            HttpResponseMessage response = await client.SendAsync(request);
-            if (response.IsSuccessStatusCode)
-            {
-                string responseBody = await response.Content.ReadAsStringAsync();
-                var json = JObject.Parse(responseBody);
-                var accessToken = json["access_token"]?.ToString();
-                client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
-
-                HttpResponseMessage new_response = await client.GetAsync($"https://api.spotify.com/v1/browse/new-releases?country={location}&limit=10");
+                HttpResponseMessage response = await client.SendAsync(request);
                 if (response.IsSuccessStatusCode)
                 {
-                    string new_responseBody = await new_response.Content.ReadAsStringAsync();
-                    var result = JObject.Parse(new_responseBody);
-                    string topSong = "";
-                    foreach (var item in result["albums"]["items"])
+                    string responseBody = await response.Content.ReadAsStringAsync();
+                    var json = JObject.Parse(responseBody);
+                    var accessToken = json["access_token"]?.ToString();
+
+                    client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
+                    HttpResponseMessage new_response = new HttpResponseMessage();
+                    if (dateTimeFiltering)
+                        // substring gets only Year from the datetime.
+                        new_response = await client.GetAsync($"https://api.spotify.com/v1/search?q={fromDate.Substring(0, 5)}&type=track&country={location}&market={Uri.EscapeDataString("GR")}&&limit=10");
+                    else
+                        new_response = await client.GetAsync($"https://api.spotify.com/v1/search?q={Uri.EscapeDataString("track")}&type=track&country={location}&market={Uri.EscapeDataString("GR")}&limit=10");
+
+                    if (response.IsSuccessStatusCode)
                     {
-                        Console.WriteLine($"Album: {item["name"]}, Artist: {item["artists"][0]["name"]}");
-                        topSong+= $" Album: {item["name"]}, Artist: {item["artists"][0]["name"]}";
+                        string new_responseBody = await new_response.Content.ReadAsStringAsync();
+                        return new_responseBody;
                     }
-                    return topSong;
+                    else
+                    {
+                        Console.WriteLine("Error getting top tracks: " + response.ReasonPhrase);
+                        return "Error getting tracks: " + response.ReasonPhrase;
+                    }
                 }
                 else
                 {
-                    Console.WriteLine("Error getting top tracks: " + response.ReasonPhrase);
-                    return "Error getting top tracks: " + response.ReasonPhrase;
+                    Console.WriteLine("Error getting access token: " + response.ReasonPhrase);
+                    return "Error getting access token: " + response.ReasonPhrase;
                 }
-            }
-            else
+            }catch(Exception ex) 
             {
-                Console.WriteLine("Error getting access token: " + response.ReasonPhrase);
-                return "Error getting access token: " + response.ReasonPhrase;
+                return "Spotify API call error: " +ex.Message;
             }
         }
     }

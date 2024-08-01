@@ -6,13 +6,13 @@ namespace API_Aggregation.Services
     {
         private readonly ConcurrentDictionary<string, List<long>> _requestTimes = new ConcurrentDictionary<string, List<long>>();
 
+        // storing every info for every api call into a dict
         public void RecordRequest(string apiName, long responseTime)
         {
             if (!_requestTimes.ContainsKey(apiName))
             {
                 _requestTimes[apiName] = new List<long>();
             }
-
             _requestTimes[apiName].Add(responseTime);
         }
 
@@ -20,6 +20,8 @@ namespace API_Aggregation.Services
         {
             var statistics = new Dictionary<string, ApiStatistics>();
 
+            // for each info saved, we create a performance buckets.
+            // and print it out to the user.
             foreach (var api in _requestTimes)
             {
                 var totalRequests = api.Value.Count;

@@ -39,12 +39,12 @@ namespace API_Aggregation.Tests
             // Arrange
             _weatherServiceMock.Setup(s => s.GetWeatherDataAsync(It.IsAny<string>())).ReturnsAsync("{\"weather\":\"sunny\"}");
             _twitterServiceMock.Setup(s => s.GetTweetsAsync(It.IsAny<string>())).ReturnsAsync("[{\"text\":\"tweet1\"}, {\"text\":\"tweet2\"}]");
-            _newsServiceMock.Setup(s => s.GetNewsAsync(It.IsAny<string>())).ReturnsAsync("[{\"title\":\"news1\"}, {\"title\":\"news2\"}]");
-            _spotifyServiceMock.Setup(s => s.GetMusicDataAsync(It.IsAny<string>())).ReturnsAsync("[{\"track\":\"song1\"}, {\"track\":\"song2\"}]");
-            _countryServiceMock.Setup(s => s.GetCountryDataAsync(It.IsAny<string>())).ReturnsAsync("[{\"repo\":\"repo1\"}, {\"repo\":\"repo2\"}]");
+            _newsServiceMock.Setup(s => s.GetNewsAsync(It.IsAny<string>(), true, "2022-01-01T12:30:45Z", "2024-01-01T12:30:45Z")).ReturnsAsync("[{\"title\":\"news1\"}, {\"title\":\"news2\"}]");
+            _spotifyServiceMock.Setup(s => s.GetMusicDataAsync(It.IsAny<string>(), true, "2022-01-01T12:30:45Z")).ReturnsAsync("[{\"track\":\"song1\"}, {\"track\":\"song2\"}]");
+            _countryServiceMock.Setup(s => s.GetCountryDataAsync(It.IsAny<string>())).ReturnsAsync("[{\"repo\":\"country1\"}, {\"repo\":\"country2\"}]");
 
             // Act
-            var result = await _aggregationService.GetAggregatedDataAsync("location", "query");
+            var result = await _aggregationService.GetAggregatedDataAsync("Greece", "Greece", true, "2022-01-01T12:30:45Z", "2024-01-01T12:30:45Z");
 
             // Assert
             Assert.NotNull(result);

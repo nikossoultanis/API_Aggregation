@@ -2,7 +2,7 @@
 {
     public interface IAggregationService
     {
-        Task<AggregatedData> GetAggregatedDataAsync(string location, string query/*, string fromDate, string toDate, string sortBy*/);
+        Task<AggregatedData> GetAggregatedDataAsync(string location, string query,bool dateTimeFiltering, string fromDate, string toDate);
     }
 
     public class AggregatedData

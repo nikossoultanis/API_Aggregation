@@ -4,7 +4,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace API_Aggregation.Controllers
 {
+    //used to designate a class as an API controller
     [ApiController]
+    //the base route for the controller
     [Route("[controller]")]
     public class AggregationController : ControllerBase
     {
@@ -23,11 +25,12 @@ namespace API_Aggregation.Controllers
         /// <param name="fromDate">The start date for filtering data (YYYY-MM-DD).</param>
         /// <param name="toDate">The end date for filtering data (YYYY-MM-DD).</param>
         /// <param name="sortBy">The field to sort by (e.g., relevance, date).</param>
+        /// 
         /// <returns>Aggregated data from multiple APIs.</returns>
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] string location, [FromQuery] string query/*, [FromQuery] string fromDate, [FromQuery] string toDate, [FromQuery] string sortBy*/)
+        public async Task<IActionResult> Get([FromQuery] string location, [FromQuery] string query, [FromQuery] bool dateTimeFiltering = false, [FromQuery] string fromDate = "2024-01-01", [FromQuery] string toDate = "2024-01-01")
         {
-            var data = await _aggregationService.GetAggregatedDataAsync(location, query/*, fromDate, toDate, sortBy*/);
+            var data = await _aggregationService.GetAggregatedDataAsync(location, query, dateTimeFiltering, fromDate, toDate);
             return Ok(data);
         }
     }
