@@ -27,7 +27,7 @@ namespace API_Aggregation.Services
             var musicTask = _spotifyService.GetMusicDataAsync(location);
             var gitHubTask = _gitHubService.GetRepositoryDataAsync(query);
 
-            await Task.WhenAll(weatherTask, twitterTask, newsTask, /*musicTask,*/ gitHubTask);
+            await Task.WhenAll(weatherTask, twitterTask, newsTask, musicTask, gitHubTask);
 
             return new AggregatedData
             {
