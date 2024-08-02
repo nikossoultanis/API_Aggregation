@@ -17,13 +17,27 @@ namespace API_Aggregation.Services
             _statisticsService = statisticsService;
             _cache = cache;
         }
-
+        /// <summary>
+        /// Asynchronously retrieves news data based on the specified location and optional date-time filtering.
+        /// </summary>
+        /// <param name="location">The location used to search for news data.</param>
+        /// <param name="dateTimeFiltering">Indicates whether date-time filtering should be applied.</param>
+        /// <param name="fromDate">The starting date for filtering the news data. This parameter is used only if <paramref name="dateTimeFiltering"/> is true.</param>
+        /// <param name="toDate">The ending date for filtering the news data. This parameter is used only if <paramref name="dateTimeFiltering"/> is true.</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation.
+        /// The task result contains the news data as a string.
+        /// If the news data is currently unavailable, returns a message indicating this.
+        /// </returns>
         public async Task<string> GetNewsAsync(string location, bool dateTimeFiltering, string fromDate, string toDate)
         {
             try
             {
                 string response = "";
                 var sports = "sports";
+                // cache value is the key we are looking for into the cache memory
+                // it is different, depending the date filtering variable.
+                // if we want to filter by date, then we need to search for a api call that included datetime
                 string cacheValue = "";
                 if (dateTimeFiltering)
                     cacheValue = $"{location}-{fromDate}-{toDate}";

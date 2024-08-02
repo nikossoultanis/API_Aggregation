@@ -6,7 +6,10 @@ using Moq;
 using Xunit;
 
 namespace API_Aggregation.Tests
-{
+{    
+     /// <summary>
+     /// Contains unit tests for the <see cref="AggregationService"/>.
+     /// </summary>
     public class AggregationServiceTests
     {
         private readonly Mock<IOpenWeatherMapService> _weatherServiceMock;
@@ -15,7 +18,10 @@ namespace API_Aggregation.Tests
         private readonly Mock<ISpotifyService> _spotifyServiceMock;
         private readonly Mock<ICountryService> _countryServiceMock;
         private readonly AggregationService _aggregationService;
-
+        /// <summary>
+        /// Initializes a new instance of the <see cref="AggregationServiceTests"/> class.
+        /// Sets up the mocks and the <see cref="AggregationService"/> instance.
+        /// </summary>
         public AggregationServiceTests()
         {
             _weatherServiceMock = new Mock<IOpenWeatherMapService>();
@@ -32,7 +38,10 @@ namespace API_Aggregation.Tests
                 _countryServiceMock.Object
             );
         }
-
+        /// <summary>
+        /// Tests if <see cref="AggregationService.GetAggregatedDataAsync"/> returns the expected aggregated data.
+        /// </summary>
+        /// <returns>A task that represents the asynchronous operation.</returns>
         [Fact]
         public async Task GetAggregatedDataAsync_ReturnsAggregatedData()
         {

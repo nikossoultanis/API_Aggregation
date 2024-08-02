@@ -28,7 +28,7 @@ namespace API_Aggregation.Controllers
         /// 
         /// <returns>Aggregated data from multiple APIs.</returns>
         [HttpGet]
-        public async Task<IActionResult> Get([FromQuery] string location, [FromQuery] string query, [FromQuery] bool dateTimeFiltering = false, [FromQuery] string fromDate = "2024-01-01", [FromQuery] string toDate = "2024-01-01")
+        public async Task<IActionResult> Get([FromQuery] string location, [FromQuery] string query, [FromQuery] bool dateTimeFiltering = false, [FromQuery] string fromDate = "2023-01-01T00:00:00Z", [FromQuery] string toDate = "2024-01-01T00:00:00Z")
         {
             var data = await _aggregationService.GetAggregatedDataAsync(location, query, dateTimeFiltering, fromDate, toDate);
             return Ok(data);

@@ -15,11 +15,20 @@ namespace API_Aggregation.Services
             _statisticsService = sp;
             _cache = cache;
         }
-
+        /// <summary>
+        /// Asynchronously retrieves country data based on the specified query.
+        /// </summary>
+        /// <param name="query">The query string used to search for country data.</param>
+        /// <returns>
+        /// A task that represents the asynchronous operation.
+        /// The task result contains the country data as a string.
+        /// If the country data is currently unavailable, returns a message indicating this.
+        /// </returns>
         public async Task<string> GetCountryDataAsync(string query)
         {
             try
-            {
+            {                
+                // cache value is the key we are looking for into the cache memory
                 string cacheValue = $"{query}";
                 string response="";
                 // Timer for Statistics
