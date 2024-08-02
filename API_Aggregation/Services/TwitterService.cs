@@ -1,5 +1,6 @@
 ﻿using API_Aggregation.Configurations;
 using API_Aggregation.Interfaces;
+using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Options;
 
 namespace API_Aggregation.Services

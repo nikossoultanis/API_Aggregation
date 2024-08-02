@@ -1,8 +1,5 @@
-﻿using API_Aggregation.Configurations;
-using API_Aggregation.Interfaces;
-using Microsoft.Extensions.Options;
+﻿using API_Aggregation.Interfaces;
 using System.Diagnostics;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace API_Aggregation.Services
 {
@@ -10,31 +7,40 @@ namespace API_Aggregation.Services
     {
         private readonly HttpClient _httpClient;
         private readonly RequestStatisticsService _statisticsService;
+        private APICaching _cache;
 
-        public CountryService(HttpClient httpClient, RequestStatisticsService statisticsService)
+        public CountryService(HttpClient httpClient, APICaching cache, RequestStatisticsService sp)
         {   
             _httpClient = httpClient;
-            _statisticsService = statisticsService;
+            _statisticsService = sp;
+            _cache = cache;
         }
 
         public async Task<string> GetCountryDataAsync(string query)
         {
             try
             {
+                string cacheValue = $"{query}";
+                string response="";
                 // Timer for Statistics
                 var stopwatch = Stopwatch.StartNew();
+                string mostRecentResponse = await _cache.GetOrAddAsync(cacheValue, async () =>
+                {
+                    // HTTP request to the API endpoint
+                    ResilientHttpClient resilientHttpClient = new ResilientHttpClient();
 
-                // HTTP request to the API endpoint
-                ResilientHttpClient resilientHttpClient = new ResilientHttpClient();
+                    response = await resilientHttpClient.GetDataWithFallbackAsync($"https://restcountries.com/v3.1/name/{query}");
 
-                string response = await resilientHttpClient.GetDataWithFallbackAsync($"https://restcountries.com/v3.1/name/{query}");
+                    return response;
+                });
+                
                 stopwatch.Stop();
 
                 // statistic service is responsible for saving the info data about an API call.
                 // in this example the info is the time required for the api call.
                 // in swagger we can see all the saved data for every API call we did.
                 _statisticsService.RecordRequest("CountryAPI", stopwatch.ElapsedMilliseconds);
-                return response;
+                return mostRecentResponse;
             }
             catch (HttpRequestException)
             {

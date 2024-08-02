@@ -1,23 +1,21 @@
 ﻿using API_Aggregation.Configurations;
 using API_Aggregation.Interfaces;
 using Microsoft.Extensions.Options;
-using Polly.Retry;
 using System.Diagnostics;
 
 namespace API_Aggregation.Services
 {
     public class NewsService : INewsService
     {
-        private readonly HttpClient _httpClient;
         private readonly string _apiKey;
         private readonly RequestStatisticsService _statisticsService;
+        private APICaching _cache;
 
-        public NewsService(HttpClient httpClient, IOptions<NewsConfig> config, RequestStatisticsService statisticsService)
+        public NewsService(IOptions<NewsConfig> config, APICaching cache,RequestStatisticsService statisticsService)
         {
-            _httpClient = httpClient;
             _apiKey = config.Value.ApiKey;
             _statisticsService = statisticsService;
-
+            _cache = cache;
         }
 
         public async Task<string> GetNewsAsync(string location, bool dateTimeFiltering, string fromDate, string toDate)
@@ -26,17 +24,21 @@ namespace API_Aggregation.Services
             {
                 string response = "";
                 var sports = "sports";
-
+                string cacheValue = "";
+                if (dateTimeFiltering)
+                    cacheValue = $"{location}-{fromDate}-{toDate}";
                 // Timer for Statistics
                 var stopwatch = Stopwatch.StartNew();
+                string mostRecentResponse = await _cache.GetOrAddAsync(cacheValue, async () =>
+                {
+                    ResilientHttpClient resilientHttpClient = new ResilientHttpClient();
 
-                ResilientHttpClient resilientHttpClient = new ResilientHttpClient();
-
-                if (dateTimeFiltering)
-                    response = await resilientHttpClient.GetDataWithFallbackAsync($"https://gnews.io/api/v4/search?q={sports}&country={location}&from={fromDate}&to={toDate}&lang=el&apikey={_apiKey}");
-                else
-                    response = await resilientHttpClient.GetDataWithFallbackAsync($"https://gnews.io/api/v4/search?q={sports}&country={location}&lang=el&&apikey={_apiKey}");
-
+                    if (dateTimeFiltering)
+                        response = await resilientHttpClient.GetDataWithFallbackAsync($"https://gnews.io/api/v4/search?q={sports}&country={location}&from={fromDate}&to={toDate}&lang=el&apikey={_apiKey}");
+                    else
+                        response = await resilientHttpClient.GetDataWithFallbackAsync($"https://gnews.io/api/v4/search?q={sports}&country={location}&lang=el&&apikey={_apiKey}");
+                    return response;
+                });
                 /*
                  * code where the api call is done without fallback mechanism
        
@@ -58,7 +60,7 @@ namespace API_Aggregation.Services
                 // in this example the info is the time required for the api call.
                 // in swagger we can see all the saved data for every API call we did.
                 _statisticsService.RecordRequest("GNewsAPI", stopwatch.ElapsedMilliseconds);
-                return response;
+                return mostRecentResponse;
             }
             catch(HttpRequestException)
             {

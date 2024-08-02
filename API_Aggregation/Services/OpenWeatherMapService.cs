@@ -14,15 +14,15 @@ namespace API_Aggregation.Services
         private readonly HttpClient _httpClient;
         private readonly string _apiKey;
         private readonly RequestStatisticsService _statisticsService;
+        private readonly APICaching _cache;
 
-
-        public OpenWeatherMapService(HttpClient httpClient, IOptions<OpenWeatherMapConfig> config, RequestStatisticsService statisticsService)
+        public OpenWeatherMapService(HttpClient httpClient, IOptions<OpenWeatherMapConfig> config,APICaching cache ,RequestStatisticsService statisticsService)
         {
             _httpClient = httpClient;
             // API Key Entry
             _apiKey = config.Value.ApiKey;
             _statisticsService = statisticsService;
-
+            _cache = cache;
         }
 
         // Task for async API GET
@@ -31,15 +31,18 @@ namespace API_Aggregation.Services
             try
             {
                 string response = "";
+                string cacheValue = $"{location}";
                 var stopwatch = Stopwatch.StartNew();
-
-                ResilientHttpClient resilientHttpClient = new ResilientHttpClient();
-                response = await resilientHttpClient.GetDataWithFallbackAsync($"https://api.openweathermap.org/data/2.5/weather?q={location}&appid={_apiKey}");        
-                
+                string mostRecentResponse = await _cache.GetOrAddAsync(cacheValue, async () =>
+                {
+                    ResilientHttpClient resilientHttpClient = new ResilientHttpClient();
+                    response = await resilientHttpClient.GetDataWithFallbackAsync($"https://api.openweathermap.org/data/2.5/weather?q={location}&appid={_apiKey}");
+                    return response;
+                });
                 stopwatch.Stop();
 
                 _statisticsService.RecordRequest("OpenWeatherMap", stopwatch.ElapsedMilliseconds);
-                return response;
+                return mostRecentResponse;
             }
             catch (HttpRequestException)
             {
